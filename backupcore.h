@@ -3,8 +3,10 @@
 
 #include <QString>
 #include <vector>
+#include <map>
 #include <string>
 #include <utility>
+#include <functional>
 #include <ctime>
 #include <QProcess>
 #include <fstream>
@@ -16,17 +18,20 @@
 class BackupCore
 {
 public:
-    typedef std::pair<std::string, std::string> par;
-    typedef std::vector<par> vec;
+    typedef std::pair<std::string, std::string> t_par;
+    typedef std::vector<t_par> vec;
+    typedef std::map<std::string, std::string> t_map;
     static int backup();
 private:
-    static vec readSettings();
-    static void setDefaultSettings(vec & settings);
-    static void writeSettings(const vec & settings);
+    static t_par lineToPair(const std::string & line);
+    static std::string pairToLine(const t_par & par);
+    static void readSettings();
+    static void setDefaultSettings();
+    static void writeSettings();
     static std::string getCurrentTime(const char * = "%Y%m%d%H%M%S");
-    static void updateSettings(int oldVersion);
-    static void resolveCmd(const vec & settings, std::string & cmd);
+    static void resolveCmd(std::string & cmd);
     static int currentVersion;
+    static t_map backupSettings;
 };
 
 #endif // BACKUPCORE_H

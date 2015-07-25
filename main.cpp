@@ -32,6 +32,8 @@ int main(int argc, char *argv[]) {
                          backgroundApp.quit);
         //QObject::connect(&notifyTrayIcon, &NotifyTray::messageClicked,
         //                 backgroundApp.quit);
+        QObject::connect(&notifyTrayIcon, SIGNAL(messageClicked()),
+                         &backgroundApp, SLOT(quit()));
         notifyTrayIcon.show();
         notifyTrayIcon.setClickToClose(false);
         notifyTrayIcon.showMessage(QObject::tr("Code Backup Tool"),
