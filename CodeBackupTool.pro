@@ -11,6 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = CodeBackupTool
 TEMPLATE = app
 
+RC_ICONS = icon.ico
+
 CONFIG += c++11
 
 SOURCES += main.cpp\
@@ -20,7 +22,8 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     notifytray.h \
-    backupcore.h
+    backupcore.h \
+    backupthread.h
 
 RESOURCES += \
     resource.qrc

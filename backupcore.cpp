@@ -51,14 +51,17 @@ std::string BackupCore::pairToLine(const t_par &par) {
 
 int BackupCore::backup() {
     readSettings();
-    std::string zipCmd;//, moveCmd;
+    std::string zipCmd;
     resolveCmd(zipCmd);
-    QProcess process;
-    process.start(zipCmd.c_str());
-    if (!process.waitForStarted())
-        return 1;
-    if (!process.waitForFinished(-1))
-        return 2;
+    qDebug() << zipCmd.c_str();
+    Sleep(uint(8000));
+    qDebug() << "finish";
+//    QProcess process;
+//    process.start(zipCmd.c_str());
+//    if (!process.waitForStarted())
+//        return 1;
+//    if (!process.waitForFinished(-1))
+//        return 2;
     return 0;
 }
 
@@ -93,6 +96,8 @@ void BackupCore::readSettings() {
             }
         }
         fin.close();
+    } else {
+        writeSettings();
     }
 }
 

@@ -16,7 +16,6 @@ void NotifyTray::setClickToClose(bool b) {
 }
 
 void NotifyTray::clickToClose() {
-    qDebug() << "Notify Tray Message Clicked";
     if (mClickToClose)
         emit onClickToClose();
 }

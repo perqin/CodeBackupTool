@@ -5,7 +5,9 @@
 #include <QIcon>
 #include <QSystemTrayIcon>
 #include <QObject>
+#include <QTimer>
 #include "notifytray.h"
+#include "backupthread.h"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -22,29 +24,51 @@ int main(int argc, char *argv[]) {
         // Show setting windows GUI
         QApplication foregroundApp(argc, argv);
         MainWindow w;
+        w.setWindowIcon(QIcon(":/icon.png"));
         w.show();
         return foregroundApp.exec();
     } else {
         // Just backup
         QApplication backgroundApp(argc, argv);
+        backgroundApp.setQuitOnLastWindowClosed(false);
         NotifyTray notifyTrayIcon(QIcon(":/icon.png"));
         QObject::connect(&notifyTrayIcon, &NotifyTray::onClickToClose,
                          backgroundApp.quit);
-        //QObject::connect(&notifyTrayIcon, &NotifyTray::messageClicked,
-        //                 backgroundApp.quit);
-        QObject::connect(&notifyTrayIcon, SIGNAL(messageClicked()),
-                         &backgroundApp, SLOT(quit()));
         notifyTrayIcon.show();
         notifyTrayIcon.setClickToClose(false);
         notifyTrayIcon.showMessage(QObject::tr("Code Backup Tool"),
                                    QObject::tr("Backup starts..."));
         // Do backup...
-        //
-        pauseExec(3000);
-        notifyTrayIcon.setClickToClose(true);
-        notifyTrayIcon.showMessage(QObject::tr("Code Backup Tool"), QObject::tr("Backup finish. Click here to close."));
-        pauseExec(30000);
-        backgroundApp.quit();
+        BackupThread * backupThread = new BackupThread();
+        QTimer * quitTimer = new QTimer(&backgroundApp);
+        quitTimer->setInterval(10000);
+        QObject::connect(quitTimer, &QTimer::timeout, backgroundApp.quit);
+        QObject::connect(backupThread, SIGNAL(resultReady(int)),
+                         quitTimer, SLOT(start()));
+        QObject::connect(backupThread, &BackupThread::resultReady,
+                         [&notifyTrayIcon, &backgroundApp](int code) {
+            notifyTrayIcon.setClickToClose(true);
+            switch (code) {
+            case 0:
+                notifyTrayIcon.showMessage(QObject::tr("Code Backup Tool"),
+                                           QObject::tr("Backup succeed!"));
+                break;
+            case 1:
+                notifyTrayIcon.showMessage(QObject::tr("Code Backup Tool"),
+                                           QObject::tr("Fail to start backup!"));
+                break;
+            case 2:
+                notifyTrayIcon.showMessage(QObject::tr("Code Backup Tool"),
+                                           QObject::tr("Fail to finish backup!"));
+                break;
+            default:
+                break;
+            }
+        });
+        QObject::connect(backupThread, SIGNAL(finished()),
+                         backupThread, SLOT(deleteLater()));
+        backupThread->start();
+        return backgroundApp.exec();
     }
     // Impossible to reach. Just for dismissing the bothering warnings.
     return 0;
