@@ -18,12 +18,14 @@ CONFIG += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     notifytray.cpp \
-    backupcore.cpp
+    backupcore.cpp \
+    backupsettings.cpp
 
 HEADERS  += mainwindow.h \
     notifytray.h \
     backupcore.h \
-    backupthread.h
+    backupthread.h \
+    backupsettings.h
 
 RESOURCES += \
     resource.qrc

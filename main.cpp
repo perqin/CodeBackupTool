@@ -9,7 +9,7 @@
 #include "notifytray.h"
 #include "backupthread.h"
 
-#ifdef Q_OS_WIN
+/*#ifdef Q_OS_WIN
 #include "windows.h"
 
 void pauseExec(int ms) {
@@ -17,14 +17,15 @@ void pauseExec(int ms) {
         return;
     Sleep(uint(ms));
 }
-#endif
+#endif*/
 
 int main(int argc, char *argv[]) {
-    if (argc > 1 && QString("--setting").compare(QString(argv[1])) == 0) {
+    if (argc > 1 && QString("--settings").compare(QString(argv[1])) == 0) {
         // Show setting windows GUI
         QApplication foregroundApp(argc, argv);
         MainWindow w;
         w.setWindowIcon(QIcon(":/icon.png"));
+        w.setWindowTitle(QObject::tr("Code Backup Tool Settings"));
         w.show();
         return foregroundApp.exec();
     } else {
